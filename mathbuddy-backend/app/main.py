@@ -9,10 +9,10 @@ app = FastAPI(title="MathBuddy API", version="1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Izinkan semua origin
-    allow_credentials=False,  # Matikan credentials
+    allow_origins=["*"],  # izinkan semua origin
     allow_methods=["*"],
     allow_headers=["*"],
+    # allow_credentials=True,  # HAPUS atau comment baris ini
 )
 
 app.include_router(auth.router)
