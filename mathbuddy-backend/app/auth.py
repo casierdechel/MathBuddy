@@ -26,6 +26,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     
     # Generate JWT
     token_data = {"sub": str(user.id), "exp": datetime.utcnow() + timedelta(hours=8)}
+    print("🔑 JWT_SECRET:", settings.JWT_SECRET)  # untuk debug
     token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
     
     return {
