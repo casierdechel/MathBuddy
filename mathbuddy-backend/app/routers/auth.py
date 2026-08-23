@@ -1,20 +1,34 @@
 # its-mab/mathbuddy-backend/app/routers/auth.py
-import bcrypt
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import User
+from app.schemas import LoginRequest, LoginResponse
 from jose import jwt
 from datetime import datetime, timedelta
 from app.config import settings
+import bcrypt
 
-@router.post("/login")
+# 🔥 INI YANG HILANG
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+@router.post("/login", response_model=LoginResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.nis == request.nis).first()
     if not user:
         raise HTTPException(status_code=401, detail="NIS tidak ditemukan")
-    
-    # Verifikasi dengan bcrypt langsung
-    if not bcrypt.checkpw(
-        request.password.encode('utf-8'),
-        user.password_hash.encode('utf-8')
-    ):
+
+    # Verifikasi password dengan bcrypt langsung
+    try:
+        is_valid = bcrypt.checkpw(
+            request.password.encode('utf-8'),
+            user.password_hash.encode('utf-8')
+        )
+    except ValueError as e:
+        print(f"❌ Bcrypt error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+    if not is_valid:
         raise HTTPException(status_code=401, detail="Password salah")
 
     token_data = {
