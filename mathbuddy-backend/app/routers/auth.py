@@ -17,12 +17,20 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="NIS tidak ditemukan")
 
+    # Pastikan password_hash tidak None
+    if not user.password_hash:
+        raise HTTPException(status_code=401, detail="Password hash tidak valid")
+
     # Verifikasi password dengan bcrypt langsung
-    if not bcrypt.checkpw(
-        request.password.encode('utf-8'),
-        user.password_hash.encode('utf-8')
-    ):
-        raise HTTPException(status_code=401, detail="Password salah")
+    try:
+        if not bcrypt.checkpw(
+            request.password.encode('utf-8'),
+            user.password_hash.encode('utf-8')
+        ):
+            raise HTTPException(status_code=401, detail="Password salah")
+    except ValueError as e:
+        # Jika hash tidak valid (misal format salah)
+        raise HTTPException(status_code=401, detail="Format password hash tidak valid")
 
     token_data = {
         "sub": str(user.id),
