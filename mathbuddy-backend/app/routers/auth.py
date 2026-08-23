@@ -17,9 +17,8 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.nis == request.nis).first()
     if not user:
         raise HTTPException(status_code=401, detail="NIS tidak ditemukan")
-    
-    # SEMENTARA: bandingkan plain text (karena hash bcrypt belum sync)
-    if request.password != user.password_hash:
+
+    if not pwd_context.verify(request.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Password salah")
     
     token_data = {

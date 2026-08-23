@@ -30,7 +30,7 @@ def get_next_question(
         3: 'lcm_error'
     }
     target = session_target_map.get(current_user.current_session, 'direct_addition')
-    
+
     # Cari atau buat session
     db_session = db.query(LearningSession).filter(
         LearningSession.user_id == current_user.id,
@@ -51,6 +51,16 @@ def get_next_question(
         db.refresh(db_session)
         session_id = db_session.id
         logger.info(f"User {current_user.id} created new session {session_id} for session_number {current_user.current_session}")
+
+    last_interaction = db.query(Interaction).filter(
+            Interaction.user_id == current_user.id,
+            Interaction.session_id == session_id
+        ).order_by(Interaction.sequence_number.desc()).first()
+
+    if last_interaction:
+        next_sequence = last_interaction.sequence_number + 1
+    else:
+        next_sequence = 1
     
     # Hitung jumlah soal none yang sudah dijawab di sesi ini
     none_count = db.query(Interaction).join(Question).filter(
@@ -164,7 +174,8 @@ def get_next_question(
             "options": shuffled_options,
             "arm_id": selected_arm_id,
             "representation": req.current_representation,
-            "session_id": session_id
+            "session_id": session_id,
+            "sequence_number": next_sequence
         }
     }
 

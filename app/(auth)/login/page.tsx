@@ -16,73 +16,66 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const response = await api.auth.login(nis, password);
-      console.log("Login response:", response);
-
       if (response.status === "success") {
-        // Simpan token dan user data ke localStorage
         localStorage.setItem("token", response.token);
         localStorage.setItem("userId", response.user.id.toString());
         localStorage.setItem("userName", response.user.name);
         localStorage.setItem("groupType", response.user.group_type);
         localStorage.setItem("currentSession", response.user.current_session?.toString() || "1");
-
-        // Redirect ke halaman belajar
-        router.push("/learn");
+        router.push("/dashboard");
       } else {
         setError(response.detail || "Login gagal. Silakan coba lagi.");
       }
     } catch (err: any) {
-      console.error("Login error:", err);
-      setError(err.message || "Terjadi kesalahan. Periksa koneksi internet atau server.");
+      setError(err.message || "Terjadi kesalahan. Periksa koneksi.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center p-6">
-      <div className="w-full max-w-md bg-white border border-outline-variant rounded-2xl p-8 shadow-sm">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-200 via-blue-100 to-indigo-100">
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-blue-200/60 p-8 md:p-10">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-primary mb-2">Masuk ke MathBuddy</h1>
-          <p className="text-sm text-on-surface-variant">
-            Masukkan NIS dan password untuk mulai belajar pecahan.
-          </p>
+          <div className="inline-flex p-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full shadow-lg mb-4">
+            <span className="material-symbols-outlined text-5xl text-white">calculate</span>
+          </div>
+          <h1 className="text-3xl font-bold text-primary">MathBuddy</h1>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-xl text-red-700 text-sm">
             {error}
           </div>
         )}
 
-        <form className="space-y-5" onSubmit={handleLogin}>
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div>
-            <label className="block text-sm font-semibold text-on-surface mb-2">
-              NIS (Nomor Induk Siswa)
+            <label className="block text-sm font-semibold text-on-surface mb-1">
+              No Absen Siswa
             </label>
             <input
               type="text"
-              placeholder="Contoh: 2024001"
+              placeholder=""
               value={nis}
               onChange={(e) => setNis(e.target.value)}
-              className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl text-sm focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-5 py-4 bg-white border-2 border-blue-200 rounded-2xl text-base focus:outline-none focus:border-primary transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-on-surface mb-2">
+            <label className="block text-sm font-semibold text-on-surface mb-1">
               Kata Sandi
             </label>
             <input
               type="password"
-              placeholder="••••••••"
+              placeholder=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl text-sm focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-5 py-4 bg-white border-2 border-blue-200 rounded-2xl text-base focus:outline-none focus:border-primary transition-colors"
               required
             />
           </div>
@@ -90,15 +83,11 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-primary text-on-primary font-semibold rounded-xl text-sm hover:brightness-110 active:scale-[0.98] transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-2xl text-lg hover:from-blue-600 hover:to-blue-700 active:scale-[0.98] transition-all shadow-md disabled:opacity-50"
           >
             {loading ? "Memproses..." : "Masuk"}
           </button>
         </form>
-
-        <p className="text-center text-xs text-on-surface-variant mt-8">
-          * Password default: <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">password123</span>
-        </p>
       </div>
     </div>
   );

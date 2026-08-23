@@ -11,12 +11,7 @@ interface TopAppBarProps {
   isSidebarOpen: boolean;
 }
 
-export default function TopAppBar({ 
-  title = "Ruang Belajar", 
-  showBackButton = false, 
-  backButtonHref = "/learn",
-  isSidebarOpen
-}: TopAppBarProps) {
+export default function TopAppBar({ title = "Ruang Belajar", showBackButton = false, backButtonHref = "/learn", isSidebarOpen }: TopAppBarProps) {
   const [userName, setUserName] = useState("Siswa");
   const [userInitial, setUserInitial] = useState("S");
 
@@ -27,31 +22,23 @@ export default function TopAppBar({
   }, []);
 
   return (
-    <header 
-      className={`fixed top-0 right-0 h-16 bg-surface border-b border-outline-variant flex items-center justify-between px-edge-margin z-40 transition-all duration-300 ${
-        isSidebarOpen ? "left-[280px]" : "left-[78px]"
-      }`}
-    >
+    <header className={`fixed top-0 right-0 h-20 bg-white/90 backdrop-blur-sm border-b border-blue-100 flex items-center justify-between px-6 z-40 transition-all duration-300 ${isSidebarOpen ? "left-[280px]" : "left-[78px]"}`}>
       <div>
         {showBackButton ? (
-          <Link href={backButtonHref} className="text-primary flex items-center gap-2 font-semibold hover:underline text-sm">
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            <span>Kembali</span>
+          <Link href={backButtonHref} className="text-primary flex items-center gap-2 font-semibold text-base">
+            <span className="material-symbols-outlined">arrow_back</span> Kembali
           </Link>
         ) : (
-          <div className="flex items-center gap-2 text-sm font-bold text-primary animate-fadeIn">
-            <span className="material-symbols-outlined text-base">local_library</span>
+          <div className="flex items-center gap-2 text-lg font-bold text-primary">
+            <span className="material-symbols-outlined text-2xl">local_library</span>
             <span>{title}</span>
           </div>
         )}
       </div>
-      
-      <div className="flex items-center gap-6">
-        <Link href="/profile" className="flex items-center gap-3 group cursor-pointer">
-          <span className="text-on-surface group-hover:text-primary transition-colors">
-            {userName}
-          </span>
-          <div className="w-8 h-8 rounded-full bg-slate-200 font-bold text-xs flex items-center justify-center border border-outline-variant">
+      <div className="flex items-center gap-4">
+        <Link href="/profile" className="flex items-center gap-3 group">
+          <span className="text-base font-medium text-gray-700 group-hover:text-primary transition">{userName}</span>
+          <div className="w-10 h-10 rounded-full bg-blue-100 font-bold text-base flex items-center justify-center border border-blue-200">
             {userInitial}
           </div>
         </Link>

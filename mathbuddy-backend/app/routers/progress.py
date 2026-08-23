@@ -27,6 +27,7 @@ def get_progress(
             "data": {
                 "total_questions": 0,
                 "correct": 0,
+                "misconception_wrong": 0,
                 "misconceptions": {},
                 "misconception_details": []
             }
@@ -34,19 +35,27 @@ def get_progress(
     
     correct = sum(1 for i in interactions if i.is_correct)
     
-    misconception_counts = {}
-    misconception_details = []
+    # Hitung miskonsepsi yang jawabannya salah
+    misconception_wrong = sum(
+        1 for i in interactions
+        if i.misconception_type not in ('none', 'unknown') and not i.is_correct
+    )
     
+    # Hitung per jenis miskonsepsi yang salah
+    misconception_counts = {}
     for i in interactions:
-        if i.misconception_type not in ('none', 'unknown'):
+        if i.misconception_type not in ('none', 'unknown') and not i.is_correct:
             if i.misconception_type not in misconception_counts:
                 misconception_counts[i.misconception_type] = 0
             misconception_counts[i.misconception_type] += 1
     
+    # Ambil contoh per jenis miskonsepsi yang salah
+    misconception_details = []
     for mis_type, count in misconception_counts.items():
         example = db.query(Interaction).filter(
             Interaction.user_id == user_id,
-            Interaction.misconception_type == mis_type
+            Interaction.misconception_type == mis_type,
+            Interaction.is_correct == False
         ).first()
         
         if example:
@@ -65,6 +74,7 @@ def get_progress(
         "data": {
             "total_questions": total_questions,
             "correct": correct,
+            "misconception_wrong": misconception_wrong,
             "misconceptions": misconception_counts,
             "misconception_details": misconception_details
         }

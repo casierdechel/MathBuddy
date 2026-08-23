@@ -3,53 +3,48 @@
   Deskripsi: File CSS global untuk aplikasi Next.js.
   Catatan: File ini digunakan untuk mengatur gaya global dan mengimpor Tailwind CSS.
 */
-
 @import "tailwindcss";
 
-/* Konfigurasi Kustom Standar Tailwind v4 */
 @theme {
   --font-sans: var(--font-quicksand), sans-serif;
 
-  --color-primary: #0058be;
-  --color-primary-fixed: #d8e2ff;
+  --color-primary: #1a73e8;
+  --color-primary-fixed: #d2e3fc;
   --color-on-primary: #ffffff;
-  --color-on-primary-fixed: #001a42;
+  --color-on-primary-fixed: #0d2b4b;
   
-  --color-secondary: #0060ac;
-  --color-secondary-container: #64a8fe;
-  --color-on-secondary-container: #003c70;
-  --color-secondary-fixed: #d4e3ff;
+  --color-secondary: #0d47a1;
+  --color-secondary-container: #64b5f6;
+  --color-on-secondary-container: #0a2a5e;
 
-  --color-surface: #f9f9ff;
-  --color-surface-container: #e7eeff;
-  --color-surface-container-low: #f0f3ff;
-  --color-surface-container-high: #dee8ff;
-  --color-surface-container-highest: #d8e3fb;
-  --color-on-surface: #111c2d;
-  --color-on-surface-variant: #424754;
-  --color-inverse-surface: #263143;
+  --color-surface: #f0f7ff;
+  --color-surface-container: #e3f0ff;
+  --color-surface-container-low: #f5faff;
+  --color-surface-container-high: #d4e8ff;
+  --color-surface-container-highest: #c0ddfa;
+  --color-on-surface: #0b1e33;
+  --color-on-surface-variant: #2c4b6f;
+  --color-inverse-surface: #1a3a5a;
   
-  --color-background: #f9f9ff;
-  --color-on-background: #111c2d;
+  --color-background: #f0f7ff;
+  --color-on-background: #0b1e33;
   
-  --color-outline-variant: #c2c6d6;
+  --color-outline-variant: #b0cde0;
 
-  /* Jarak / Spacing Custom */
-  --spacing-edge-margin: 48px;
-  --spacing-gutter: 32px;
-  --spacing-stack-lg: 24px;
-  --spacing-section-gap: 64px;
-  --spacing-stack-md: 16px;
+  --spacing-edge-margin: 32px;
+  --spacing-gutter: 24px;
+  --spacing-stack-lg: 28px;
+  --spacing-section-gap: 40px;
+  --spacing-stack-md: 20px;
   --spacing-container-max: 1280px;
-  --spacing-stack-sm: 8px;
+  --spacing-stack-sm: 12px;
 }
 
-/* Selector utilitas ikon */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;
+  font-size: 28px;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -60,4 +55,23 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Tambahan untuk tampilan lebih besar & ramah anak */
+html {
+  font-size: 18px; /* base font lebih besar */
+}
+body {
+  font-size: 1rem;
+}
+h1 { font-size: 1.6rem; font-weight: 700; }
+h2 { font-size: 1.8rem; font-weight: 700; }
+h3 { font-size: 1.5rem; font-weight: 600; }
+p { font-size: 1.1rem; line-height: 1.6; }
+button, .btn { font-size: 1.1rem; padding: 0.8rem 1.8rem; }
+input { font-size: 1.1rem; padding: 0.8rem 1.2rem; }
+
+/* Card shadow lebih lembut */
+.card {
+  @apply bg-white rounded-3xl shadow-lg border border-primary/10;
 }
