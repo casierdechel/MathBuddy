@@ -34,10 +34,16 @@ export default function LearnIntroPage() {
   }, [router]);
 
   const sessionData = [
-    { id: 1, title: 'Sesi 1: Direct Addition/Substraction', desc: 'Menjumlahkan/Mengurangi pembilang & penyebut langsung', icon: 'add_box', status: sessions.session_1 },
+    { id: 1, title: 'Sesi 1: Direct Addition', desc: 'Menjumlahkan pembilang & penyebut langsung', icon: 'add_box', status: sessions.session_1 },
     { id: 2, title: 'Sesi 2: Denominator Error', desc: 'Menyamakan penyebut', icon: 'equalizer', status: sessions.session_2 },
     { id: 3, title: 'Sesi 3: LCM Error', desc: 'Menentukan KPK', icon: 'calculate', status: sessions.session_3 }
   ];
+
+  const handleStartSession = (sessionId: number) => {
+    // Simpan session yang dipilih ke localStorage
+    localStorage.setItem('currentSession', sessionId.toString());
+    router.push('/learn/modul-utama');
+  };
 
   const completedCount = Object.values(sessions).filter(s => s === 'completed').length;
   const progressPercent = Math.round((completedCount / 3) * 100);
@@ -98,9 +104,12 @@ export default function LearnIntroPage() {
                   <p className="text-gray-500 text-sm flex-1">{s.desc}</p>
                   <div className="mt-4">
                     {isUnlocked && (
-                      <Link href="/learn/modul-utama" className="block w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-xl text-center hover:from-blue-600 hover:to-blue-700 transition-all">
+                      <button
+                        onClick={() => handleStartSession(s.id)}
+                        className="block w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-xl text-center hover:from-blue-600 hover:to-blue-700 transition-all"
+                      >
                         Mulai
-                      </Link>
+                      </button>
                     )}
                     {isCompleted && (
                       <button disabled className="w-full py-3 bg-blue-100 text-blue-400 font-bold rounded-xl cursor-default flex items-center justify-center gap-2">
