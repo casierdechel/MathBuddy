@@ -11,9 +11,9 @@ import { api } from "@/services/api";
 
 // VisualRepresentation dengan ukuran lebih besar
 function VisualRepresentation({ a, b, c, d, operator, shape }: {
-  a: number; b: number; c: number; d: number; operator: string; shape?: 'bar' | 'circle' | 'polygon'
+  a: number; b: number; c: number; d: number; operator: string; shape?: 'bar' | 'circle'
 }) {
-  const usedShape = shape || ['bar', 'circle', 'polygon'][(a + b + c + d) % 3];
+  const usedShape = shape || ['bar', 'circle'][(a + b + c + d) % 3];
 
   const BarShape = ({ num, den, color }: { num: number; den: number; color: string }) => (
     <div className="flex-1 h-16 border-2 border-gray-300 rounded-2xl overflow-hidden bg-white grid"
