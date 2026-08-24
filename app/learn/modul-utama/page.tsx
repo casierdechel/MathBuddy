@@ -159,7 +159,7 @@ function FractionDisplay({ text }: { text: string }) {
   return <span className="text-xl font-bold">{text}</span>;
 }
 
-// --- KOMPONEN UTAMA (logika SAMA, hanya styling diperbesar) ---
+// --- KOMPONEN UTAMA ---
 export default function ModulUtamaQuizPage() {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -182,6 +182,9 @@ export default function ModulUtamaQuizPage() {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitialized = useRef<boolean>(false);
+  
+  // 🔥 PERBAIKAN TIMER: Tambahkan ref untuk menyimpan nilai timeLeft terkini
+  const timeLeftRef = useRef<number>(timeLeft);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -225,22 +228,38 @@ export default function ModulUtamaQuizPage() {
     } catch (e) { console.error(e); } finally { setIsLoading(false); }
   }, [sessionId, representation, token]);
 
-  // Timer (tetap)
+  // 🔥 PERBAIKAN TIMER: Update ref setiap kali timeLeft berubah
   useEffect(() => {
-    if (isTimeUp || timeLeft <= 0) {
-      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-      return;
-    }
-    if (!timerRef.current) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) { setIsTimeUp(true); return 0; }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [isTimeUp, timeLeft]);
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
+
+  // 🔥 PERBAIKAN TIMER: Timer hanya dijalankan SEKALI saat mount
+  useEffect(() => {
+    if (isTimeUp) return;
+
+    timerRef.current = setInterval(() => {
+      const currentTime = timeLeftRef.current;
+      if (currentTime <= 1) {
+        setIsTimeUp(true);
+        setTimeLeft(0);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+      } else {
+        const newTime = currentTime - 1;
+        timeLeftRef.current = newTime;
+        setTimeLeft(newTime);
+      }
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []); // <- Dependency kosong, hanya dijalankan sekali
 
   // localStorage
   useEffect(() => {
