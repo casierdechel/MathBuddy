@@ -60,51 +60,10 @@ function VisualRepresentation({ a, b, c, d, operator, shape }: {
     );
   };
 
-  const PolygonShape = ({ num, den, color }: { num: number; den: number; color: string }) => {
-    const size = 140;
-    const cx = size/2, cy = size/2;
-    const radius = 55;
-    const sides = 6;
-    const angleStep = (2 * Math.PI) / sides;
-    const points = Array.from({ length: sides }).map((_, i) => {
-      const angle = -Math.PI/2 + i*angleStep;
-      return `${cx + radius * Math.cos(angle)},${cy + radius * Math.sin(angle)}`;
-    }).join(' ');
-    const filledSectors = Math.min(num, sides);
-    const sectorPoints = [];
-    for (let i = 0; i <= filledSectors; i++) {
-      const angle = -Math.PI/2 + i*angleStep;
-      sectorPoints.push(`${cx + radius * Math.cos(angle)},${cy + radius * Math.sin(angle)}`);
-    }
-    const sectorPath = sectorPoints.length > 1 ? `M ${cx} ${cy} L ${sectorPoints.join(' L ')} Z` : '';
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <svg viewBox={`0 0 ${size} ${size}`} className="w-32 h-32">
-          <polygon points={points} fill="white" stroke="#888" strokeWidth="2.5" />
-          {Array.from({ length: sides }).map((_, i) => {
-            const angle = -Math.PI/2 + i*angleStep;
-            const x = cx + radius * Math.cos(angle);
-            const y = cy + radius * Math.sin(angle);
-            return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#ccc" strokeWidth="2" />;
-          })}
-          {num > 0 && <path d={sectorPath} fill={color} opacity="0.7" stroke="white" strokeWidth="1.5" />}
-          {Array.from({ length: sides }).map((_, i) => {
-            const angle = -Math.PI/2 + i*angleStep;
-            const x = cx + radius * Math.cos(angle);
-            const y = cy + radius * Math.sin(angle);
-            return <line key={`border-${i}`} x1={cx} y1={cy} x2={x} y2={y} stroke="#999" strokeWidth="2" />;
-          })}
-          <polygon points={points} fill="none" stroke="#666" strokeWidth="2.5" />
-        </svg>
-      </div>
-    );
-  };
-
   const renderFraction = (num: number, den: number, color: string) => {
     switch (usedShape) {
       case 'bar': return <BarShape num={num} den={den} color={color} />;
       case 'circle': return <CircleShape num={num} den={den} color={color} />;
-      case 'polygon': return <PolygonShape num={num} den={den} color={color} />;
       default: return <BarShape num={num} den={den} color={color} />;
     }
   };
