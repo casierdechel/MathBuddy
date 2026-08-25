@@ -40,11 +40,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-200 via-blue-100 to-indigo-100">
       <div className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-blue-200/60 p-8 md:p-10">
         <div className="text-center mb-8">
-          <div className="inline-flex p-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full shadow-lg mb-4">
-            <span className="material-symbols-outlined text-5xl text-white">calculate</span>
-          </div>
           <h1 className="text-3xl font-bold text-primary">MathBuddy</h1>
-          <p className="text-sm text-gray-500 mt-1">Belajar pecahan jadi menyenangkan</p>
         </div>
 
         {error && (
@@ -60,7 +56,7 @@ export default function LoginPage() {
             </label>
             <input
               type="text"
-              placeholder="Contoh: A01 atau 2024001"
+              placeholder="Contoh : B01"
               value={nis}
               onChange={(e) => setNis(e.target.value)}
               className="w-full px-5 py-4 bg-white border-2 border-blue-200 rounded-2xl text-base focus:outline-none focus:border-primary transition-colors"
@@ -84,7 +80,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
                 tabIndex={-1}
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
@@ -103,10 +99,6 @@ export default function LoginPage() {
             {loading ? "Memproses..." : "Masuk"}
           </button>
         </form>
-
-        <p className="text-center text-xs text-gray-400 mt-6">
-          * Password default: <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">(no absen + belajar)</span>
-        </p>
       </div>
     </div>
   );
