@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // 🔥 TAMBAHKAN
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +44,7 @@ export default function LoginPage() {
             <span className="material-symbols-outlined text-5xl text-white">calculate</span>
           </div>
           <h1 className="text-3xl font-bold text-primary">MathBuddy</h1>
+          <p className="text-sm text-gray-500 mt-1">Belajar pecahan jadi menyenangkan</p>
         </div>
 
         {error && (
@@ -58,7 +60,7 @@ export default function LoginPage() {
             </label>
             <input
               type="text"
-              placeholder=""
+              placeholder="Contoh: A01 atau 2024001"
               value={nis}
               onChange={(e) => setNis(e.target.value)}
               className="w-full px-5 py-4 bg-white border-2 border-blue-200 rounded-2xl text-base focus:outline-none focus:border-primary transition-colors"
@@ -70,14 +72,27 @@ export default function LoginPage() {
             <label className="block text-sm font-semibold text-on-surface mb-1">
               Kata Sandi
             </label>
-            <input
-              type="password"
-              placeholder=""
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-5 py-4 bg-white border-2 border-blue-200 rounded-2xl text-base focus:outline-none focus:border-primary transition-colors"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Masukkan kata sandi"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-5 py-4 bg-white border-2 border-blue-200 rounded-2xl text-base focus:outline-none focus:border-primary transition-colors pr-14"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                tabIndex={-1}
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+              >
+                <span className="material-symbols-outlined text-2xl">
+                  {showPassword ? "visibility_off" : "visibility"}
+                </span>
+              </button>
+            </div>
           </div>
 
           <button
@@ -88,6 +103,10 @@ export default function LoginPage() {
             {loading ? "Memproses..." : "Masuk"}
           </button>
         </form>
+
+        <p className="text-center text-xs text-gray-400 mt-6">
+          * Password default: <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">(no absen + belajar)</span>
+        </p>
       </div>
     </div>
   );

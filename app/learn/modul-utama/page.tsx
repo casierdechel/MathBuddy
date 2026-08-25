@@ -175,15 +175,16 @@ export default function ModulUtamaQuizPage() {
   const [userId, setUserId] = useState<number>(1);
   const [token, setToken] = useState<string>("");
   const [soalCount, setSoalCount] = useState<number>(1);
-  const [timeLeft, setTimeLeft] = useState<number>(1800);
+  const [timeLeft, setTimeLeft] = useState<number>(1200);
   const [isTimeUp, setIsTimeUp] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<"belum_target" | "sudah_target_sisa_waktu" | "waktu_habis" | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // 🔥 PERUBAHAN: Tambahkan state untuk loading feedback
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState<boolean>(false);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitialized = useRef<boolean>(false);
-  
-  // 🔥 PERBAIKAN TIMER: Tambahkan ref untuk menyimpan nilai timeLeft terkini
   const timeLeftRef = useRef<number>(timeLeft);
 
   const formatTime = (seconds: number) => {
@@ -228,12 +229,12 @@ export default function ModulUtamaQuizPage() {
     } catch (e) { console.error(e); } finally { setIsLoading(false); }
   }, [sessionId, representation, token]);
 
-  // 🔥 PERBAIKAN TIMER: Update ref setiap kali timeLeft berubah
+  // Timer: update ref
   useEffect(() => {
     timeLeftRef.current = timeLeft;
   }, [timeLeft]);
 
-  // 🔥 PERBAIKAN TIMER: Timer hanya dijalankan SEKALI saat mount
+  // Timer: hanya dijalankan sekali saat mount
   useEffect(() => {
     if (isTimeUp) return;
 
@@ -259,7 +260,7 @@ export default function ModulUtamaQuizPage() {
         timerRef.current = null;
       }
     };
-  }, []); // <- Dependency kosong, hanya dijalankan sekali
+  }, []);
 
   // localStorage
   useEffect(() => {
@@ -302,10 +303,16 @@ export default function ModulUtamaQuizPage() {
     initialize();
   }, [router, fetchNextQuestion, sessionId]);
 
+  // 🔥 PERUBAHAN: handleAnswer dengan loading feedback
   const handleAnswer = async (answer: string) => {
     if (isTimeUp || selectedAnswer !== null) return;
     setSelectedAnswer(answer);
+    // Tampilkan area feedback segera dengan loading
     setShowFeedback(true);
+    setIsFeedbackLoading(true);
+    // Reset feedback data agar tidak tampil feedback lama
+    setFeedbackData(null);
+
     try {
       const response = await api.questions.submit({
         user_id: userId,
@@ -333,12 +340,23 @@ export default function ModulUtamaQuizPage() {
         setRepresentation(data.next_representation || 'simbolik');
         if (data.current_session) localStorage.setItem('currentSession', data.current_session.toString());
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      // Jika error, tampilkan feedback error
+      setFeedbackData({ type: 'wrong', title: 'Terjadi Kesalahan', message: 'Gagal memproses jawaban. Coba lagi.' });
+    } finally {
+      setIsFeedbackLoading(false);
+    }
   };
 
   const handleNextSoal = () => {
     if (soalCount >= 20) { setIsFinished(true); } else {
-      setSelectedAnswer(null); setShowFeedback(false); setSoalCount(prev => prev + 1); fetchNextQuestion();
+      setSelectedAnswer(null);
+      setShowFeedback(false);
+      setFeedbackData(null);
+      setIsFeedbackLoading(false);
+      setSoalCount(prev => prev + 1);
+      fetchNextQuestion();
     }
   };
 
@@ -427,22 +445,49 @@ export default function ModulUtamaQuizPage() {
                     ))
                 }
               </div>
-              {showFeedback && feedbackData && (
-                <div className={`p-5 rounded-2xl border-2 text-lg ${feedbackData.type === 'correct' ? 'border-emerald-300 bg-emerald-50/80 text-emerald-700' : feedbackData.type === 'misconception' ? 'border-amber-300 bg-amber-50/80 text-amber-700' : 'border-red-300 bg-red-50/80 text-red-700'}`}>
+
+              {/* 🔥 PERUBAHAN: Area feedback dengan loading */}
+              {showFeedback && (
+                <div className={`p-5 rounded-2xl border-2 text-lg ${
+                  isFeedbackLoading ? 'border-blue-200 bg-blue-50/50' :
+                  feedbackData?.type === 'correct' ? 'border-emerald-300 bg-emerald-50/80 text-emerald-700' :
+                  feedbackData?.type === 'misconception' ? 'border-amber-300 bg-amber-50/80 text-amber-700' :
+                  feedbackData?.type === 'wrong' ? 'border-red-300 bg-red-50/80 text-red-700' :
+                  'border-blue-200 bg-blue-50/50'
+                }`}>
                   <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-2xl">{feedbackData.type === 'correct' ? 'check_circle' : feedbackData.type === 'misconception' ? 'psychology' : 'error'}</span>
-                    <div>
-                      <h4 className="font-bold text-lg">{feedbackData.title}</h4>
-                      <p className="text-base mt-1">{feedbackData.message}</p>
-                    </div>
+                    {isFeedbackLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent shrink-0 mt-1"></div>
+                        <div>
+                          <h4 className="font-bold text-blue-700 text-lg">Memeriksa jawaban...</h4>
+                          <p className="text-blue-600 text-base mt-1">Mohon tunggu sebentar</p>
+                        </div>
+                      </>
+                    ) : feedbackData ? (
+                      <>
+                        <span className="material-symbols-outlined text-2xl">
+                          {feedbackData.type === 'correct' ? 'check_circle' :
+                           feedbackData.type === 'misconception' ? 'psychology' : 'error'}
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-lg">{feedbackData.title}</h4>
+                          <p className="text-base mt-1">{feedbackData.message}</p>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-gray-500">Memuat feedback...</div>
+                    )}
                   </div>
                 </div>
               )}
+
               <div className="flex items-center justify-between border-t border-gray-100 pt-6">
                 <button onClick={handleSelesaiClick} className="px-6 py-3 border-2 border-red-300 text-red-600 font-bold rounded-2xl hover:bg-red-50 active:scale-95 transition-all text-lg flex items-center gap-2">
                   <span className="material-symbols-outlined text-xl">close</span>Selesai
                 </button>
-                {showFeedback && (
+                {/* 🔥 PERUBAHAN: Tombol "Soal Selanjutnya" hanya muncul jika feedback sudah selesai loading */}
+                {showFeedback && !isFeedbackLoading && feedbackData && (
                   <button onClick={handleNextSoal} className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-2xl hover:from-blue-600 hover:to-blue-700 active:scale-95 transition-all text-lg flex items-center gap-2 shadow-md">
                     {soalCount >= 20 ? 'Lihat Hasil' : 'Soal Selanjutnya'}
                     <span className="material-symbols-outlined text-xl">arrow_forward</span>

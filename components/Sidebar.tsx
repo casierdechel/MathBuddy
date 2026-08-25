@@ -53,6 +53,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           { path: "/learn", label: "Belajar", icon: "school" },
           { path: "/progress", label: "Progress", icon: "trending_up" },
           { path: "/profile", label: "Profil", icon: "person" },
+          { path: "/kuesioner", label: "Isi Kuesioner", icon: "feedback" },
         ].map((item) => {
           const active = isActive(item.path);
           return (
