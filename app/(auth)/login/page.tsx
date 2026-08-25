@@ -68,7 +68,7 @@ export default function LoginPage() {
             <label className="block text-sm font-semibold text-on-surface mb-1">
               Kata Sandi
             </label>
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Masukkan kata sandi"
@@ -80,11 +80,11 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors p-1"
                 tabIndex={-1}
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
-                <span className="material-symbols-outlined text-2xl">
+                <span className="material-symbols-outlined text-2xl select-none leading-none">
                   {showPassword ? "visibility_off" : "visibility"}
                 </span>
               </button>
